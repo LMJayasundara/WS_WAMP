@@ -1,5 +1,5 @@
 const WebSocket = require('ws');
-const username = "ID001";
+const username = "ID002";
 const URL = "ws://127.0.0.1:8080/";
 var reconn = null;
 
@@ -15,7 +15,7 @@ async function startWebsocket() {
 
     //////////////////////////////////////////////////////////////////////////////
 
-    // class method
+    // // class method
     // const cli = new RPCClient(ws);
     // await cli.connect();
 
@@ -40,7 +40,7 @@ async function startWebsocket() {
         }
     };
 
-    const payload = [2, "19223201", "BootNotification", bootNotificationParams];
+    const payload = [2, "19223202", "BootNotification", bootNotificationParams];
 
     ws.on('open', function() {
         clearInterval(reconn);

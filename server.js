@@ -18,39 +18,21 @@ var wss = new WebSocket.Server({
     }
 });
 
-wss.on('connection', function (ws, request) {
+wss.on('connection', async function (ws, request) {
     ws.id = request.identity;
     console.log("Connected Charger ID: "  + ws.id);
 
-    new RPCServer(ws);
+    const ser = new RPCServer(ws);
 
-    ws.on('message', async function (msg) {
+    await ser.handle('BootNotification', ({params}) => {
+        console.log(`Server got BootNotification from ${ws.id}:`, params);
 
-        return new Promise(function(resolve, reject) {
-            const ccc = Array.from(wss.clients).find(client => (client.readyState === client.OPEN && client.id == ws.id));
-            resolve(ccc)
-        }).then((client)=>{
-
-            //////////////////////////////////////////////////////////////////////////////
-
-            const bootNotificationParams =  {
-                "currentTime": new Date().toISOString(),
-                "interval": 300,
-                "status": "Accepted"
-            };
-            const payload = [3, "19223201", bootNotificationParams];
-
-            //////////////////////////////////////////////////////////////////////////////
-
-            if(client !== undefined){
-                console.log(ws.id,":", JSON.parse(msg));
-                client.send(JSON.stringify(payload));
-            }
-            else{
-                console.log("Client Undefined!");
-            }
-        });
-
+        // respond to accept the client
+        return {
+            status: "Accepted",
+            interval: 300,
+            currentTime: new Date().toISOString()
+        };
     });
 
     ws.on('close', function () {
