@@ -3,8 +3,6 @@ const username = "ID002";
 const URL = "ws://127.0.0.1:8080/";
 var reconn = null;
 
-const RPCClient = require('./lib/client');
-
 async function startWebsocket() {
     var ws = new WebSocket(URL, {
         perMessageDeflate: false,
@@ -12,24 +10,6 @@ async function startWebsocket() {
             Authorization: Buffer.from(username).toString('base64'),
         },
     });
-
-    //////////////////////////////////////////////////////////////////////////////
-
-    // // class method
-    // const cli = new RPCClient(ws);
-    // await cli.connect();
-
-    // const bootNotificationParams =  {
-    //     "reason": "PowerUp",
-    //     "chargingStation": {
-    //         "model": "L2",
-    //         "vendorName": "Vega"
-    //     }
-    // };
-
-    // await cli.call("BootNotification", bootNotificationParams);
-
-    //////////////////////////////////////////////////////////////////////////////
 
     // Default
     const bootNotificationParams =  {
@@ -56,7 +36,7 @@ async function startWebsocket() {
         console.log(err.message);
     });
 
-    ws.on('close', function(ee) {
+    ws.on('close', function() {
         ws = null;
         reconn = setTimeout(startWebsocket, 5000);
     });

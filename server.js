@@ -22,7 +22,10 @@ wss.on('connection', async function (ws, request) {
     ws.id = request.identity;
     console.log("Connected Charger ID: "  + ws.id);
 
-    const ser = new RPCServer(ws);
+    const ser = new RPCServer({
+        ws: ws, 
+        protocol: ['ocpp2.0.1']
+    });
 
     await ser.handle('BootNotification', ({params}) => {
         console.log(`Server got BootNotification from ${ws.id}:`, params);
