@@ -1,33 +1,34 @@
-const WebSocket = require('ws');
 const username = "ID001";
 const URL = "ws://127.0.0.1:8080/";
-
 const RPCClient = require('./lib/client');
+const WebSocket = require('ws');
+const { CONNECTING, OPEN, CLOSING, CLOSED } = WebSocket;
 
+// Implemented Method
 async function startWebsocket() {
-    var ws = new WebSocket(URL, {
-        perMessageDeflate: false,
-        headers: {
-            Authorization: Buffer.from(username).toString('base64'),
-        },
+    const cli = new RPCClient({
+        URL: URL,
+        username: username
     });
 
-    // class method
-    const cli = new RPCClient({
-        ws: ws
-    });
     await cli.connect();
 
-    const bootNotificationParams =  {
-        "reason": "PowerUp",
-        "chargingStation": {
-            "model": "L2",
-            "vendorName": "Vega"
-        }
-    };
+    cli.on('state', async (state) => {
+        console.log("state: ", state);
 
-    const bootResponse = await cli.call("BootNotification", bootNotificationParams);
-    console.log("bootResponse: ", bootResponse);
+        if(state.state == OPEN){
+            const bootNotificationParams =  {
+                "reason": "PowerUp",
+                "chargingStation": {
+                    "model": "L2",
+                    "vendorName": "Vega"
+                }
+            };
+        
+            const bootResponse = await cli.call("BootNotification", bootNotificationParams);
+            console.log("bootResponse: ", bootResponse);
+        }
+    });
 };
 
 startWebsocket();

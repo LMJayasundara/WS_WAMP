@@ -3,6 +3,7 @@ const username = "ID002";
 const URL = "ws://127.0.0.1:8080/";
 var reconn = null;
 
+// Default Method
 async function startWebsocket() {
     var ws = new WebSocket(URL, {
         perMessageDeflate: false,
@@ -11,7 +12,6 @@ async function startWebsocket() {
         },
     });
 
-    // Default
     const bootNotificationParams =  {
         "reason": "PowerUp",
         "chargingStation": {
@@ -37,7 +37,7 @@ async function startWebsocket() {
     });
 
     ws.on('close', function() {
-        ws = null;
+        ws.terminate();
         reconn = setTimeout(startWebsocket, 5000);
     });
 };
