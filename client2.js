@@ -3,6 +3,11 @@ const username = "ID002";
 const URL = "ws://127.0.0.1:8080/";
 var reconn = null;
 
+const heartbeat = (ws) => {
+    console.log("ping to server");
+    clearTimeout(ws.pingTimeout);
+};
+
 // Default Method
 async function startWebsocket() {
     var ws = new WebSocket(URL, {
@@ -22,7 +27,11 @@ async function startWebsocket() {
 
     const payload = [2, "19223202", "BootNotification", bootNotificationParams];
 
+    var ping = () => { heartbeat(ws) };
+
     ws.on('open', function() {
+        ws.on('ping', ping);
+
         clearInterval(reconn);
         ws.send(JSON.stringify(payload));
     });
