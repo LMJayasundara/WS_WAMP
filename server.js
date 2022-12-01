@@ -43,12 +43,20 @@ wss.on('connection', async function (ws, request) {
 
     await ser.handle('BootNotification', ({params}) => {
         console.log(`Server got BootNotification from ${ws.id}:`, params);
-        ws.on('pong', () => { heartbeat(ws) });
-
         // respond to accept the client
         return {
             status: "Accepted",
             interval: 300,
+            currentTime: new Date().toISOString()
+        };
+    });
+
+    await ser.handle('Heartbeat', ({params}) =>{
+        console.log(`Server got Heartbeat from ${ws.id}`);
+        ws.on('pong', () => { heartbeat(ws) });
+
+        // respond with current time
+        return {
             currentTime: new Date().toISOString()
         };
     });

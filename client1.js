@@ -27,6 +27,15 @@ async function startWebsocket() {
         
             const bootResponse = await cli.call("BootNotification", bootNotificationParams);
             console.log("bootResponse: ", bootResponse);
+
+            // check that the server accepted the client
+            if (bootResponse.status === 'Accepted') {
+
+                // send a Heartbeat request and await the response
+                const heartbeatResponse = await cli.call('Heartbeat', {});
+                // read the current server time from the response
+                console.log('Server time is:', heartbeatResponse.currentTime);
+            }
         }
     });
 };

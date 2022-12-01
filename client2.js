@@ -30,7 +30,7 @@ async function startWebsocket() {
     var ping = () => { heartbeat(ws) };
 
     ws.on('open', function() {
-        ws.on('ping', ping);
+        // ws.on('ping', ping);
 
         clearInterval(reconn);
         ws.send(JSON.stringify(payload));
@@ -38,7 +38,12 @@ async function startWebsocket() {
 
     ws.on('message', function(msg) {
         var data = JSON.parse(msg);
-        console.log(data);
+        console.log("response:", data);
+
+        if(data[2].status == 'Accepted'){
+            ws.send(JSON.stringify([2, 'hb', 'Heartbeat', {}]));
+            ws.on('ping', ping);
+        }
     });
 
     ws.on('error', function (err) {
