@@ -21,10 +21,9 @@ var wss = new WebSocket.Server({
 
 wss.on('connection', async function (ws, request) {
     ws.id = request.identity;
-    console.log("Connected Charger ID: "  + ws.id);
-
     ws.isAlive = true;
     connected_clients.set(ws.id, ws);
+    console.log("Connected Charger ID: "  + ws.id);
 
     const ser = new RPCServer({
         ws: ws, 
@@ -55,7 +54,6 @@ wss.on('connection', async function (ws, request) {
         ws.terminate();
         console.log(ws.id + ' Client disconnected');
     });
-
 });
 
 server.listen(PORT, ()=>{
