@@ -30,8 +30,6 @@ async function startWebsocket() {
     var ping = () => { heartbeat(ws) };
 
     ws.on('open', function() {
-        // ws.on('ping', ping);
-
         clearInterval(reconn);
         ws.send(JSON.stringify(payload));
     });

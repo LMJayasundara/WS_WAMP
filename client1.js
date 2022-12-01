@@ -16,6 +16,7 @@ async function startWebsocket() {
     cli.on('state', async (state) => {
         console.log("state: ", state);
 
+        // check that the ws state is open
         if(state.state == OPEN){
             const bootNotificationParams =  {
                 "reason": "PowerUp",
@@ -25,12 +26,13 @@ async function startWebsocket() {
                 }
             };
         
+            // send a BootNotification request and await the response
             const bootResponse = await cli.call("BootNotification", bootNotificationParams);
+            // read the bootResponse
             console.log("bootResponse: ", bootResponse);
 
             // check that the server accepted the client
             if (bootResponse.status === 'Accepted') {
-
                 // send a Heartbeat request and await the response
                 const heartbeatResponse = await cli.call('Heartbeat', {});
                 // read the current server time from the response
