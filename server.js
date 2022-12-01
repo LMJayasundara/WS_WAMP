@@ -19,16 +19,6 @@ var wss = new WebSocket.Server({
     }
 });
 
-const heartbeat = (client) => {
-    console.log("Pong from client: "+ client.id);
-    client.isAlive = true;
-};
-
-const ping = (client) => {
-    // do some stuff
-    console.log("Ping to client: " + client.id);
-};
-
 wss.on('connection', async function (ws, request) {
     ws.id = request.identity;
     console.log("Connected Charger ID: "  + ws.id);
@@ -38,7 +28,9 @@ wss.on('connection', async function (ws, request) {
 
     const ser = new RPCServer({
         ws: ws, 
-        protocol: ['ocpp2.0.1']
+        protocol: ['ocpp2.0.1'],
+        clients: connected_clients,
+        pingTimeOut: 5000
     });
 
     await ser.handle('BootNotification', ({params}) => {
@@ -53,8 +45,6 @@ wss.on('connection', async function (ws, request) {
 
     await ser.handle('Heartbeat', ({params}) =>{
         console.log(`Server got Heartbeat from ${ws.id}`);
-        ws.on('pong', () => { heartbeat(ws) });
-
         // respond with current time
         return {
             currentTime: new Date().toISOString()
@@ -66,24 +56,6 @@ wss.on('connection', async function (ws, request) {
         console.log(ws.id + ' Client disconnected');
     });
 
-});
-
-const interval = setInterval(() => {
-    // console.log("Try to ping...");
-    Array.from(connected_clients.values()).forEach((client) => {
-        if (client.isAlive === false) {
-            connected_clients.delete(client.id);
-            console.log("Terminate Client:", client.id);
-            return client.terminate();
-        };
-
-        client.isAlive = false;
-        client.ping(() => { ping(client) });
-    });
-}, 5000);
-
-wss.on('close', function close() {
-    clearInterval(interval);
 });
 
 server.listen(PORT, ()=>{
